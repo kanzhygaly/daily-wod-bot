@@ -1,8 +1,7 @@
 import os
 import time
 
-from bot.dto.page_dto import PageDto
-from bot.dto.user_dto import UserDto
+from bot.dto.dto import PageDto, UserDto
 from bot.spider.selenium_spider import SeleniumSpider
 
 if __name__ == '__main__':

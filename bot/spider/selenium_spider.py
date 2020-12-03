@@ -7,8 +7,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from bot.constants.page_fields import LOGIN_FIELD_ID, PASSWORD_FIELD_ID, LOGIN_BUTTON_ID, EC_PROFILE_ELEMENT, \
     WOD_CONTENT_ID, EC_ALL_WODS_ELEMENT
-from bot.dto.page_dto import PageDto
-from bot.dto.user_dto import UserDto
+from bot.dto.dto import PageDto, UserDto
 from bot.spider.lean_web_driver import LeanWebDriver
 from bot.spider.selenium_parser import parse_wod_content, parse_wod_url, parse_wod_date
 

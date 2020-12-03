@@ -7,3 +7,8 @@ class PageDto(NamedTuple):
 
     def get_login_url(self) -> str:
         return self.url + self.login_path
+
+
+class UserDto(NamedTuple):
+    login: str
+    password: str
