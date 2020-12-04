@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import psycopg2
 from psycopg2 import pool
 
@@ -22,37 +24,37 @@ class DBClient:
         if self.__connection:
             self.__connection_pool.closeall()
 
-    def fetch_one(self, query: str):
+    def fetch_one(self, query: str, args: Tuple):
         self.__open_connection()
 
-        self.__cursor.execute(query)
+        self.__cursor.execute(query, args)
         record = self.__cursor.fetchone()
 
         self.__close_connection()
         return record
 
-    def fetch_many(self, query: str, size: int):
+    def fetch_many(self, query: str, args: Tuple, size: int):
         self.__open_connection()
 
-        self.__cursor.execute(query)
+        self.__cursor.execute(query, args)
         records = self.__cursor.fetchmany(size)
 
         self.__close_connection()
         return records
 
-    def fetch_all(self, query: str):
+    def fetch_all(self, query: str, args: Tuple):
         self.__open_connection()
 
-        self.__cursor.execute(query)
+        self.__cursor.execute(query, args)
         records = self.__cursor.fetchall()
 
         self.__close_connection()
         return records
 
-    def execute(self, statement: str):
+    def execute(self, query: str, args: Tuple):
         self.__open_connection()
 
-        self.__cursor.execute(statement)
+        self.__cursor.execute(query, args)
         self.__connection.commit()
 
         self.__close_connection()
