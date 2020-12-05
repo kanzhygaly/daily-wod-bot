@@ -3,20 +3,22 @@ from typing import Tuple
 import psycopg2
 from psycopg2 import pool
 
+from bot.dto.dto import DbCredentials
 
-class DBClient:
 
-    def __init__(self):
+class DbClient:
+
+    def __init__(self, credentials: DbCredentials):
         try:
             min_conn = 1
             max_conn = 20
 
             self.__connection_pool = psycopg2.pool.ThreadedConnectionPool(min_conn, max_conn,
-                                                                          user='<user>',
-                                                                          password='<password>',
-                                                                          host='<host>',
-                                                                          port='<port>',
-                                                                          database='<db_name>')
+                                                                          user=credentials.user,
+                                                                          password=credentials.password,
+                                                                          host=credentials.host,
+                                                                          port=credentials.port,
+                                                                          database=credentials.database)
         except (Exception, psycopg2.Error) as error:
             print('Error while connecting to DB', error)
 

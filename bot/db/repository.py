@@ -1,24 +1,33 @@
 from typing import Dict, Any
 
-from bot.db.db_client import DBClient
+from bot.db.db_client import DbClient
 
 
 class Repository:
 
-    def __init__(self, db_client: DBClient):
+    def __init__(self, db_client: DbClient):
         self.db_client = db_client
 
-    def get_one(self, table_name, fields: Dict[str, Any]):
+    def __get_one(self, table_name, fields: Dict[str, Any]):
         where_stmt = 'and '.join([f'{k} = {v}' for k, v in fields.keys()])
         select_query = f'SELECT * FROM {table_name} WHERE {where_stmt}'
         return self.db_client.fetch_one(select_query)
 
-    def get_one_by_id(self, table_name, id_item: Dict[str, Any]):
-        return self.get_one(table_name, id_item)
+    def __get_one_by_fields(self, table_name, fields: Dict[str, Any]):
+        with_values = {k: v for k, v in fields.items() if v is not None}
+        return self.__get_one(table_name, with_values)
 
-    def get_one_by_other(self, table_name, fields: Dict[str, Any], excluded_field: str):
-        fields.pop(excluded_field)
-        return self.get_one(table_name, fields)
+    def get_one_by_id(self, table_name, id_item: Dict[str, Any]):
+        return self.__get_one(table_name, id_item)
+
+    def get_one_by_entity(self, entity):
+        table_name = entity.table_name()
+        id_field = entity.id_field()
+
+        if id_value := getattr(entity, id_field):
+            return self.__get_one(table_name, {id_field: id_value})
+
+        return self.__get_one_by_fields(table_name, entity.fields())
 
     def insert(self, table_name, fields: Dict[str, Any]):
         columns = ', '.join(list(fields.keys()))

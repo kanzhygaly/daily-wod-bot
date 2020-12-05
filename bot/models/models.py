@@ -1,6 +1,8 @@
+import uuid
 from datetime import date
 from dataclasses import asdict, dataclass
 from typing import Tuple
+from uuid import UUID
 
 from bot.db.repository import Repository
 
@@ -8,21 +10,31 @@ from bot.db.repository import Repository
 @dataclass
 class Entity:
 
-    def save(self, repo: Repository, update: bool = False):
-        id_field = f'{self.table_name()}_id'
+    def save(self, repo: Repository):
+        update = False
         table_name = self.table_name()
+        id_field = self.id_field()
+
+        if id_value := getattr(self, id_field):
+            record = repo.get_one_by_id(table_name, {id_field: id_value})
+            update = True if record else False
+
+        if not id_value and type(id_value) is uuid.UUID:
+            id_value = uuid.uuid4()
+            setattr(self, id_field, id_value)
+
         fields = self.fields()
 
         if update:
             repo.update(table_name, fields, id_field)
         else:
             repo.insert(table_name, fields)
-            if not getattr(self, id_field):
-                record = repo.get_one_by_other(table_name, fields, id_field)
-                self.__parse_from_record(record)
 
     def table_name(self):
         return type(self).__name__.lower()
+
+    def id_field(self):
+        return f'{self.table_name()}_id'
 
     def fields(self):
         return asdict(self)
@@ -54,8 +66,8 @@ class Users(Entity):
 
 
 @dataclass
-class Provider:
-    provider_id: int = None
+class Provider(Entity):
+    provider_id: UUID = None
     name: str = None
     website: str = None
 
@@ -64,12 +76,12 @@ class Provider:
 
 
 @dataclass
-class WOD:
-    wod_id: int = None
+class WOD(Entity):
+    wod_id: UUID = None
     wod_day: date = None
     title: str = None
-    info: str = None
-    provider_id: int = None
+    content: str = None
+    provider_id: UUID = None
 
     def __str__(self):
         return self.title

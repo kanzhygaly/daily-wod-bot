@@ -12,3 +12,18 @@ class PageDto(NamedTuple):
 class UserDto(NamedTuple):
     login: str
     password: str
+
+
+class DbCredentials(NamedTuple):
+    user: str
+    password: str
+    host: str
+    port: str
+    database: str
+
+    @classmethod
+    def from_string(cls, url: str):
+        arr = url.replace('postgres://', '').replace('@', ' ').replace(':', ' ').replace('/', ' ').split()
+        credentials = cls._make(arr)
+        return credentials
+
