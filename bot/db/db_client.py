@@ -53,12 +53,15 @@ class DbClient:
         self.__close_connection()
         return records
 
-    def execute(self, query: str, args: Tuple):
+    def execute(self, query: str, args: Tuple = None):
         self.__open_connection()
 
-        self.__cursor.execute(query, args)
-        self.__connection.commit()
+        if args:
+            self.__cursor.execute(query, args)
+        else:
+            self.__cursor.execute(query)
 
+        self.__connection.commit()
         self.__close_connection()
 
     def __open_connection(self):

@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Dict, Any
 
 from bot.db.db_client import DbClient
@@ -49,3 +50,8 @@ class Repository:
         values.append(id_value)
 
         self.db_client.execute(query=update_query, args=tuple(values))
+
+    def create_all_tables(self):
+        p = Path('./bot/resources/db/create_tables.sql')
+        if p.exists() and p.is_file():
+            self.db_client.execute(query=p.read_text())

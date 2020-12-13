@@ -12,10 +12,14 @@ LOGIN_PATH = os.environ['LOGIN_PATH']
 LOGIN = os.environ['LOGIN']
 PASSWORD = os.environ['PASSWORD']
 DB_CREDENTIALS = DbCredentials.from_string(os.environ['DATABASE_URL'])
+CREATE_DB_SWITCH = os.environ['CREATE_DB_SWITCH']
 
 if __name__ == '__main__':
     db_client = DbClient(DB_CREDENTIALS)
     repo = Repository(db_client)
+
+    if CREATE_DB_SWITCH and CREATE_DB_SWITCH == 'enabled':
+        repo.create_all_tables()
 
     start_time = time.time()
     spider = SeleniumSpider(
